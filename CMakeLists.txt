@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.23)
+project(firstSFML)
+set(CMAKE_CXX_STANDARD 23)
+set(SFML_DIR "C://TechnischeInformatik/CPP/SFML/lib/cmake/SFML")
+find_package(SFML 2.5 COMPONENTS graphics window system REQUIRED)
+add_executable(firstSFML main.cpp)
+target_link_libraries(firstSFML sfml-graphics sfml-window sfml-system)
