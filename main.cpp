@@ -7,6 +7,15 @@
 
 using namespace sf;
 
+#define ROWS          60
+#define COLOMS        40
+#define WIDTH         600
+#define HIGHT         800
+
+int shadow[ROWS][COLOMS] = {0};
+
+#define RED           1
+
 int main()
 {
     int x, y;
