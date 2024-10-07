@@ -7,21 +7,26 @@
 
 using namespace sf;
 
-#define ROWS          60
-#define COLOMS        40
+#define ROWS          80
+#define COLOUMS        60
 #define WIDTH         600
-#define HIGHT         800
+#define HEIGHT        800
 
-int shadow[ROWS][COLOMS] = {0};
+int shadow[ROWS][COLOUMS] = {{0}};
 
 #define RED           1
+
+// prototypes:
+void drawSquare(int y, int x, int color, RenderWindow * w);
+
+
 
 int main()
 {
     int x, y;
     int d;
 
-    RenderWindow window(sf::VideoMode(600, 1000), "TETRIS 2CHELS");
+    RenderWindow window(sf::VideoMode(HEIGHT, WIDTH), "TETRIS 2CHELS");
 
     x = y = 300;
     d = 1;
@@ -33,6 +38,9 @@ int main()
     RectangleShape cyanRect(sf::Vector2f(100.f, 50.f));
     cyanRect.setFillColor(sf::Color::Cyan);
     cyanRect.setPosition(350.f, 300.f);
+
+
+
 
     while (window.isOpen())
     {
@@ -56,6 +64,13 @@ int main()
         window.clear();
         window.draw(whiteRect);
         window.draw(cyanRect);
+        drawSquare(3,3,RED, &window);  // y, x, c
+        drawSquare(3,5,RED, &window);
+        drawSquare(3,7,RED, &window);
+        drawSquare(3,15,RED, &window);
+        drawSquare(3,33,RED, &window);
+
+
         window.display();
         sleep(milliseconds(50));
 
@@ -65,4 +80,18 @@ int main()
     }
 
     return 0;
+}
+
+
+
+void drawSquare(int y, int x, int color, RenderWindow * w)
+{
+
+    RectangleShape Rect(sf::Vector2f((float)WIDTH/COLOUMS, (float)HEIGHT/ROWS));
+    switch (color)
+    {
+        case RED: Rect.setFillColor(sf::Color::Red);
+    }
+    Rect.setPosition(x, y);
+    w->draw(Rect);
 }
