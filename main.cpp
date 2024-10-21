@@ -7,12 +7,12 @@
 
 using namespace sf;
 
-#define ROWS          80
-#define COLOUMS        60
+#define ROWS           30
+#define COLS           20
 #define WIDTH         600
 #define HEIGHT        800
 
-int shadow[ROWS][COLOUMS] = {{0}};
+int shadow[ROWS][COLS] = {{0}};
 
 #define RED           1
 
@@ -68,7 +68,7 @@ int main()
         drawSquare(3,5,RED, &window);
         drawSquare(3,7,RED, &window);
         drawSquare(3,15,RED, &window);
-        drawSquare(3,33,RED, &window);
+        drawSquare(3,19,RED, &window);
 
 
         window.display();
@@ -87,11 +87,11 @@ int main()
 void drawSquare(int y, int x, int color, RenderWindow * w)
 {
 
-    RectangleShape Rect(sf::Vector2f((float)WIDTH/COLOUMS, (float)HEIGHT/ROWS));
+    RectangleShape Rect(sf::Vector2f((float)WIDTH/COLS, (float)HEIGHT/ROWS));
     switch (color)
     {
         case RED: Rect.setFillColor(sf::Color::Red);
     }
-    Rect.setPosition(x, y);
+    Rect.setPosition((int)(x * (float)WIDTH/COLS), (int)( y * (float)HEIGHT/ROWS));
     w->draw(Rect);
 }
