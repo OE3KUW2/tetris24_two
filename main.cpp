@@ -1,5 +1,5 @@
 /*****************************************************************************
- * firstSFML
+ * T e t r i s
  * sept 24 - OE3KUW / tetris24
  * oct 24  - drawSquare colors added (Kirakosian)
  *****************************************************************************/
@@ -50,8 +50,10 @@ RenderWindow * w;
 
 // ****************************** prototypes: *********************************
 void drawSquare(int y, int x, int color);
-void drawLine(int x1, int y1, int x2, int y2, int color);
-void drawText(char * string, int x, int y, int color);
+void drawLine(int x1, int y1, int x2, int y2, int color); // Lintner
+void drawText(char * string, int x, int y, int color); // Kranewitter
+void drawStageFrame(int x1, int y1, int x2, int y2); // Daxböck
+void drawPreparationWindow(int x1, int y1, int x2, int y2); //  Daxböck
 
 // ******************************   m a i n:  *********************************
 int main()
@@ -86,32 +88,34 @@ int main()
         //window.draw(whiteRect);
         //window.draw(cyanRect);
 
-        drawSquare(5, 0, GREEN);  // y, x, c
-        drawSquare(29, 19, GREEN);  // y, x, c
+        //drawSquare(5, 0, GREEN);  // y, x, c
+        //drawSquare(29, 19, GREEN);  // y, x, c
 
 
-        /*for (y = 5; y < ROWS; ++y)
+        for (y = 5; y < ROWS; ++y)
             for (x = 0; x < COLS; ++x)
             {
                 color = rand() % MAX_COLOR;
                 drawSquare(y, x, color);  // y, x, c
             }
-        */
 
 
-        drawLine(TLX, TLY, BRX, TLY, WHITE);
+
+
+
+        drawStageFrame(TLX, TLY, BRX, BRY);
 
 /*        drawLine(TLX, TLY, TLX, BRY, WHITE);
         drawLine(TLX, BRY, BRX, BRY, WHITE);
         drawLine(BRX, TLY, BRX, BRY, WHITE);
 */
-        //count++;
+        count++;
 
         sprintf(text, "count: %d", count);
         drawText(text, TLPX, TLPY, WHITE);
 
         window.display();
-        sleep(milliseconds(1000));  // one second
+        sleep(milliseconds(1));  // one second
     }
 
     return 0;
@@ -137,9 +141,9 @@ void drawSquare(int y, int x, int color)
         case CYAN:      Rect.setFillColor(sf::Color::Cyan);     break;
         case TRANSPARENT:
                         Rect.setFillColor(sf::Color::Transparent);    break;
-        default: std::cerr << "unknown coloer used un drawSquare" << std::endl;
+        default: std::cerr << "unknown color used in drawSquare" << std::endl;
     }
-    Rect.setPosition((int)(x * BOX_X), (int)( (y - HIDDEN_LINES) * BOX_Y));
+    Rect.setPosition((int)(x * BOX_X) + TLX, (int)( (y - HIDDEN_LINES) * BOX_Y) + TLY);
     w->draw(Rect);
 }
 
@@ -180,5 +184,12 @@ void drawText(char * string, int x, int y, int color)
     text.setStyle(sf::Text::Bold); // Stil (optional)
     text.setPosition(x, y); // x = 200, y = 150
     w->draw(text);
+
+}
+
+void drawStageFrame(int x1, int y1, int x2, int y2)
+/// from top left 2 bottom right
+{
+    drawLine(x1, y1, x2, y2, WHITE);
 
 }
