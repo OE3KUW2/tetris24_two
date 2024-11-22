@@ -6,7 +6,11 @@
  * nov 16  - drawStageFrame added              (Reinhard Daxböck)
  * nov 16  - drawText now with colors          (Paul Kronawitter)
  * nov 16  - generate figures started
- *****************************************************************************/
+ *****************************************************************************
+ * install:download https://www.sfml-dev.org/download.php SFML 2.6.2 or higher
+ * extract it, store it: C:/TechnischeInformatik/Cpp/SFML  ... see CMake.txt
+ * copy from there SFML/bin/ all *.dll in your cmake-build-debug - compile :-)
+*****************************************************************************/
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <stdlib.h>
@@ -158,7 +162,7 @@ int main()
         }
 
 
-        //window.clear(); ... zu langsam!
+        window.clear();
         drawStageFrame();
         drawPatternFrame();
         drawPattern(pattern);
@@ -167,7 +171,7 @@ int main()
 
         tick++;
 
-        if (tick > 2)
+        if (tick > 20)
         {
             tick = 0;
             refresh = TRUE;
