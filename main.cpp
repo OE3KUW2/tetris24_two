@@ -6,6 +6,7 @@
  * nov 16  - drawStageFrame added              (Reinhard Daxböck)
  * nov 16  - drawText now with colors          (Paul Kronawitter)
  * nov 16  - generate figures started
+ * nov 30  - first figures are falling
  *****************************************************************************
  * install:download https://www.sfml-dev.org/download.php SFML 2.6.2 or higher
  * extract it, store it: C:/TechnischeInformatik/Cpp/SFML  ... see CMake.txt
@@ -76,6 +77,7 @@ enum COLORS {
 RenderWindow * w;
 
 // ****************************** prototypes: *********************************
+
 void drawSquare(int y, int x, int color);
 void drawLine(int x1, int y1, int x2, int y2, int color); // Lintner
 void drawText(char * string, int x, int y, int color); // Kranewitter
@@ -96,6 +98,9 @@ void exchangePatternBoxes(int p[][N],
                           int y5, int x5, int y6, int x6);
 void rotatePattern(int p[][N]);
 
+//# int isMovePossible(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
+//# void move(int cx, int cy, int s[][COLS], int p[][N]);
+//# void freeze(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
 
 
 // ******************************   m a i n:  *********************************
@@ -119,7 +124,7 @@ int main()
     // inits:
     setNextFigure(pattern);
     setNewCenterPoint(&cy,&cx);
-
+    printf("ok!\n");
     while (window.isOpen() && work)
     {
         while (window.pollEvent(event))
@@ -129,7 +134,7 @@ int main()
 
             if (Keyboard::isKeyPressed(Keyboard::Space))
             {
-                if (doItOnlyOnce) {
+                if (doItOnlyOnce) {  // diese Funktion wird jeweils zweimal angesprochen...
                     // bisherige pattern speichern
                     rotatePattern(pattern);
                     drawPattern(pattern);
@@ -158,7 +163,6 @@ int main()
             {
                 work = FALSE;
             }
-
         }
 
 
@@ -176,21 +180,28 @@ int main()
             tick = 0;
             refresh = TRUE;
 
-            if ((stage[cy + 1][cx] == 0)  &&     // anstatt nur das center zu checken - checke 5x5!
-                (frozen[cy + 1][cx] == 0) &&
-                (cy < (ROWS - 1)))
+//#            if (isMovePossible(cx, cy, stage, frozen, pattern))
+/**/            if ((stage[cy + 1][cx] == 0)  &&     // anstatt nur das center zu checken - checke 5x5!
+/**/                (frozen[cy + 1][cx] == 0) &&
+/**/                (cy < (ROWS - 1)))
             {
                 // move possible:
-                stage[cy+1][cx] = stage[cy][cx]; // alle 5x5 übertragen
-                stage[cy][cx] = 0;               // alle 5x5 löschen
-                cy++;
+//#                move(cx, ++cy, stage, pattern);
+/**/                stage[cy+1][cx] = stage[cy][cx]; // alle 5x5 übertragen
+/**/                stage[cy][cx] = 0;               // alle 5x5 löschen
+/**/                cy++;
             }
             else
             {
                 // move nicht mehr möglich!
 
-                frozen[cy][cx] = stage[cy][cx]; // alle 5x5 übertragen
-                stage[cy][cx] = 0;              // alle 5x5 löschen
+//#                 freeze(cx, cy, stage, frozen, pattern);
+
+/**/                frozen[cy][cx] = stage[cy][cx]; // alle 5x5 übertragen
+/**/                stage[cy][cx] = 0;              // alle 5x5 löschen
+
+                // neues Element einbauen
+                setNextFigure(pattern);
                 setNewCenterPoint(&cy,&cx);
 
                 // überprüfe alle Zeilen in frozen auf Völlständigkeit
@@ -219,7 +230,7 @@ int main()
 // ****************************** functions: **********************************
 
 void drawSquare(int y, int x, int color)
-///  paint square; stage position, color
+//  paint square; stage position, color
 {
     // if (shadow[y][x] != color) {
 
@@ -399,11 +410,16 @@ void setNextFigure(int p[][N])
     int x, y;
     int figure;
 
+    // pattern löschen:
     for (y = 0; (y) < N; ++y) for (x = 0; x < N; ++x) p[y][x] = 0;
 
     figure = rand()% MAX_FIGURE;
 
-    figure = 11;
+    //n figure = 7; // jakob weiß das!
+
+    printf("figure %d\n", figure);
+    if (figure > 4) figure = 11;
+    else figure = 7;
 
     switch (figure) {
 
@@ -414,7 +430,7 @@ void setNextFigure(int p[][N])
         case  4:
         case  5:
         case  6:
-        case  7:
+        case  7: p[3][3] = RED; p[3][2] = RED; p[3][4] = RED; p[4][3] = RED; break;
         case  8:
         case  9:
         case 10:
@@ -483,6 +499,85 @@ void drawFrozen(void)
     for (y = 5; y < ROWS; ++y)
         for (x = 0; x < COLS; ++x)
         {
-            if (frozen[y][x]) drawSquare(y, x, RED/*frozen[y][x]*/);  // only frozen stones!
+            if (frozen[y][x]) drawSquare(y, x, frozen[y][x]);  // only frozen stones!
+            //n if (frozen[y][x]) drawSquare(y, x, RED/*frozen[y][x]*/);  // only frozen stones!
         }
 }
+
+void move(int cx, int cy, int s[][COLS], int p[][N])
+{
+    int i, j;
+    for (j = 0; j < N; j++)
+        for (i = 0; i < N; i++)
+            s[cy - 3 + j][cx - 3 + i] = p[j][i];
+}
+
+int isMovePossible(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N])
+// check: is a move (cy++) possible?: no froezn element, no boarder?
+{
+    int ret = TRUE, i, j;
+
+    // damit die eigene Figur nicht sich selbst im Weg steht wird sie hier zunächst entfernt.
+    // dabei gehen wir davon aus, dass sie sich auf einer erlaubten Position befindet
+
+    for (j = 0; j < N; j++)
+        for (i = 0; i < N; i++)
+            if (p[j][i])
+                s[cy - 3 + j][cx - 3 + i] = BLACK;
+
+    // nun wird ein Move des Zentrums versucht: cy++
+
+    cy++;
+
+    // für jedes verschobene Element wird nun überprüft, ob der Platz frei ist
+    // also ob kein frozen element überschrieben werden würde und
+    // ob der Platz noch im Rahmen liegt.
+    // sobald das auch nur ein einziges Mal nicht der Fall ist: ret = FALSE
+
+    for (j = 0; (j < N) && (ret); j++)
+        for (i = 0; (i < N) && (ret); i++)
+        {
+            if (p[j][i])
+            {
+                // check border
+                if ((j - 3 + cy) >= ROWS)      ret = FALSE;
+                else if ((j - 3 + cy) < 0)     ret = FALSE;
+                else if ((i - 3 + cx) >= COLS) ret = FALSE;
+                else if ((i - 3 + cx) < 0)     ret = FALSE;
+
+                // check frozen elements
+
+                else if (f[j - 3 + cy][i - 3 + cx]) ret = FALSE;
+
+            }
+        }
+
+
+    // Falls FALSE:
+    // Vor dem Return wird die Figur an die ursprüngliche Position wieder zurück eingetragen
+    // falls TRUE - nicht mehr.
+
+    if (ret == FALSE)
+    {
+        cy--; // zurück!
+        for (j = 0; j < N; j++)
+            for (i = 0; i < N; i++)
+                if (p[j][i]) s[cy - 3 + j][cx - 3 + i] = p[j][i];
+    }
+
+    return ret;
+}
+
+void freeze(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N])
+{
+    int i, j;
+
+    for (j = 0; j < N; j++)
+        for (i = 0; i < N; i++)
+            if (p[j][i])
+            {
+                f[j-3+cy][i-3+cx] = s[j-3+cy][i-3+cx];
+                s[j-3+cy][i-3+cx] = BLACK;
+            }
+}
+
