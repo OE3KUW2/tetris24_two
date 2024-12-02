@@ -1,5 +1,5 @@
 /*****************************************************************************
- * T e t r i s  - test
+ * T e t r i s 2CHELS sends greetings!
  * sept 24 - OE3KUW / tetris24
  * oct 24  - drawSquare colors added           (Samuel Kirakosyan)
  * nov 16  - drawLine colors added             (Bernhard Lintner) :)
