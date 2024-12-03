@@ -1,5 +1,6 @@
 /*****************************************************************************
- * T e t r i s  - test
+ *                             T e ⊥ r i s
+ *  **************************************************************************
  * sept 24 - OE3KUW / tetris24
  * oct 24  - drawSquare colors added           (Samuel Kirakosyan)
  * nov 16  - drawLine colors added             (Bernhard Lintner) :)
@@ -50,7 +51,7 @@ using namespace sf;
 #define TEXT_X            TLPX
 #define TEXT_LEVEL        (BRY - 24)
 
-#define MAX_FIGURE          15
+#define MAX_FIGURE          16
 
 
 int stage [ROWS][COLS] = {{0}};
@@ -98,9 +99,9 @@ void exchangePatternBoxes(int p[][N],
                           int y5, int x5, int y6, int x6);
 void rotatePattern(int p[][N]);
 
-//# int isMovePossible(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
-//# void move(int cx, int cy, int s[][COLS], int p[][N]);
-//# void freeze(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
+int isMovePossible(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
+void move(int cx, int cy, int s[][COLS], int p[][N]);
+void freeze(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N]);
 
 
 // ******************************   m a i n:  *********************************
@@ -180,25 +181,13 @@ int main()
             tick = 0;
             refresh = TRUE;
 
-//#            if (isMovePossible(cx, cy, stage, frozen, pattern))
-/**/            if ((stage[cy + 1][cx] == 0)  &&     // anstatt nur das center zu checken - checke 5x5!
-/**/                (frozen[cy + 1][cx] == 0) &&
-/**/                (cy < (ROWS - 1)))
+            if (isMovePossible(cx, cy, stage, frozen, pattern))
             {
-                // move possible:
-//#                move(cx, ++cy, stage, pattern);
-/**/                stage[cy+1][cx] = stage[cy][cx]; // alle 5x5 übertragen
-/**/                stage[cy][cx] = 0;               // alle 5x5 löschen
-/**/                cy++;
+                move(cx, ++cy, stage, pattern);
             }
             else
             {
-                // move nicht mehr möglich!
-
-//#                 freeze(cx, cy, stage, frozen, pattern);
-
-/**/                frozen[cy][cx] = stage[cy][cx]; // alle 5x5 übertragen
-/**/                stage[cy][cx] = 0;              // alle 5x5 löschen
+                freeze(cx, cy, stage, frozen, pattern);
 
                 // neues Element einbauen
                 setNextFigure(pattern);
@@ -415,29 +404,24 @@ void setNextFigure(int p[][N])
 
     figure = rand()% MAX_FIGURE;
 
-    //n figure = 7; // jakob weiß das!
-
-    printf("figure %d\n", figure);
-    if (figure > 4) figure = 11;
-    else figure = 7;
 
     switch (figure) {
 
         case  0: p[3][3] = CYAN; break;
         case  1: p[3][3] = RED; p[3][4] = RED; p[4][3] = RED; p[4][4] = RED; break;
-        case  2:
-        case  3:
-        case  4:
-        case  5:
-        case  6:
+        case  2: // feichtinger
+        case  3: //isufi
+        case  4: // heindl
+        case  5: // bruno
+        case  6: //jakob
         case  7: p[3][3] = RED; p[3][2] = RED; p[3][4] = RED; p[4][3] = RED; break;
-        case  8:
-        case  9:
-        case 10:
+        case  8: //zeiringer
+        case  9: // gregor
+        case 10: // kerschbaumer
         case 11: p[3][3] = YELLOW; p[2][3] = YELLOW; p[3][2] = YELLOW; p[2][4] = YELLOW; break;
-        case 12:
-        case 13:
-        case 14:
+        case 12: // arnold
+        case 13:// tobias
+        case 14: // seracin
         case 15: p[2][2] = BLUE; p[2][3] = BLUE; p[2][4] = BLUE; p[4][2] = BLUE; p[4][3] = BLUE; p[4][4] = BLUE; p[3][4] = BLUE; break;
     }
 
@@ -513,7 +497,7 @@ void move(int cx, int cy, int s[][COLS], int p[][N])
 }
 
 int isMovePossible(int cx, int cy, int s[][COLS], int f[][COLS], int p[][N])
-// check: is a move (cy++) possible?: no froezn element, no boarder?
+// check: is a move (cy++) possible?: if not: freeze it, attention check boarders
 {
     int ret = TRUE, i, j;
 
