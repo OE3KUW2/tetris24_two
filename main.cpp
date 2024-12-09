@@ -211,6 +211,9 @@ int main()
         if (refresh) { window.display(); refresh = FALSE;}
         std::  this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+    
+    window.close();
+    
     printf("--- ende! ---\n");
     system("Pause");
 
